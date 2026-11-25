@@ -1,0 +1,190 @@
+<div class="compare-container">
+
+  <div class="header-section">
+    <div class="logo-section">
+      <h1 class="logo">⚖️ Compare Crops</h1>
+      <p class="tagline">Compare crop production, quality, and price trend</p>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn secondary" routerLink="/home">Home</button>
+      <button class="nav-btn secondary" routerLink="/reports">Reports</button>
+      <button class="nav-btn secondary" routerLink="/dashboard">Dashboard</button>
+    </div>
+  </div>
+
+  <div class="compare-card">
+
+    <div class="card-header">
+      <h2>Select Crops to Compare</h2>
+      <p>Choose from 2 to 4 crops, then select target year and season.</p>
+    </div>
+
+    <div class="selection-info">
+      Selected Crops: <strong>{{ selectedCrops.length }}</strong> / 4
+    </div>
+
+    <div class="crops-grid">
+      <button
+        type="button"
+        class="crop-choice"
+        *ngFor="let crop of crops"
+        [class.selected]="isSelected(crop.value)"
+        (click)="toggleCrop(crop)">
+        {{ crop.label }}
+      </button>
+    </div>
+
+    <div class="form-row">
+
+      <div class="form-group">
+        <label>Target Year</label>
+
+        <select [(ngModel)]="selectedYear" name="selectedYear">
+          <option [ngValue]="null">Choose a year...</option>
+
+          <option *ngFor="let year of years" [ngValue]="year">
+            {{ year }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Season</label>
+
+        <select [(ngModel)]="selectedSeason" name="selectedSeason">
+          <option value="">Choose a season...</option>
+          <option value="Spring">Spring</option>
+          <option value="Summer">Summer</option>
+          <option value="Autumn">Autumn</option>
+          <option value="Winter">Winter</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="actions-row">
+      <button
+        type="button"
+        class="main-btn"
+        (click)="compareCrops()"
+        [disabled]="loading">
+        {{ loading ? 'Comparing...' : 'Compare Crops' }}
+      </button>
+
+      <button
+        type="button"
+        class="secondary-btn"
+        (click)="clearComparison()">
+        Clear
+      </button>
+    </div>
+
+    <div class="error-box" *ngIf="error">
+      {{ error }}
+    </div>
+
+  </div>
+
+  <div class="loading-card" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Generating predictions for selected crops...</p>
+  </div>
+
+  <ng-container *ngIf="results.length > 0 && !loading">
+
+    <div class="summary-grid">
+
+      <div class="summary-card">
+        <h3>Best Production</h3>
+        <p>{{ getBestProductionCrop() }}</p>
+      </div>
+
+      <div class="summary-card">
+        <h3>Best Quality</h3>
+        <p>{{ getBestQualityCrop() }}</p>
+      </div>
+
+      <div class="summary-card">
+        <h3>Increasing Price</h3>
+        <p>{{ getIncreaseCount() }} Crops</p>
+      </div>
+
+    </div>
+
+    <div class="results-grid">
+
+      <div
+        class="result-card"
+        *ngFor="let result of results"
+        [class.failed]="result.hasError">
+
+        <h3>{{ result.crop }}</h3>
+
+        <div class="result-line">
+          <span>Production</span>
+          <strong>{{ formatNumber(result.predictedProduction) }}</strong>
+        </div>
+
+        <div class="production-bar">
+          <div
+            class="production-fill"
+            [style.width.%]="getProductionPercent(result.predictedProduction)">
+          </div>
+        </div>
+
+        <div class="badges-row">
+          <span
+            class="badge quality"
+            [class]="getQualityClass(result.quality)">
+            {{ result.quality }}
+          </span>
+
+          <span
+            class="badge trend"
+            [class]="getTrendClass(result.priceTrend)">
+            {{ result.priceTrend }}
+          </span>
+        </div>
+
+        <p class="error-text" *ngIf="result.hasError">
+          {{ result.errorMessage }}
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="table-card">
+
+      <h2>Comparison Table</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Crop</th>
+            <th>Year</th>
+            <th>Season</th>
+            <th>Production</th>
+            <th>Quality</th>
+            <th>Price Trend</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let result of results">
+            <td>{{ result.crop }}</td>
+            <td>{{ result.targetYear }}</td>
+            <td>{{ result.season }}</td>
+            <td>{{ formatNumber(result.predictedProduction) }}</td>
+            <td>{{ result.quality }}</td>
+            <td>{{ result.priceTrend }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+  </ng-container>
+
+</div>

@@ -1,0 +1,315 @@
+<div class="reports-container">
+
+  <!-- Header -->
+  <div class="header-section">
+    <div class="logo-section">
+      <h1 class="logo">🌾 Hassad</h1>
+      <p class="tagline">حصاد - Smart Crop Prediction System</p>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn secondary" routerLink="/home">
+        🏠 Home
+      </button>
+
+      <button class="nav-btn secondary" routerLink="/dashboard">
+        📊 Dashboard
+      </button>
+
+      <button class="nav-btn secondary" routerLink="/profile">
+        👤 Profile
+      </button>
+
+      <button class="nav-btn secondary" routerLink="/reports">
+        📈 Reports
+      </button>
+
+      <button class="nav-btn logout" (click)="logout()">
+        🚪 Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="reports-hero">
+    <div class="reports-header">
+      <div class="reports-avatar">
+        <div class="avatar-circle">
+          <span class="avatar-icon">📈</span>
+        </div>
+      </div>
+
+      <div class="reports-info">
+        <h1>Prediction Reports</h1>
+        <p>Real reports generated from your saved AI prediction history.</p>
+
+        <div class="reports-status">
+          <span class="status-badge active">Database Reports</span>
+          <span class="last-update">No mock data</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-section">
+    <div class="loading-spinner"></div>
+    <p>Loading reports from database...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-section">
+    <div class="error-icon">⚠️</div>
+    <h3>Unable to Load Reports</h3>
+    <p>{{ error }}</p>
+
+    <button class="retry-btn" (click)="loadReports()">
+      Try Again
+    </button>
+  </div>
+
+  <!-- Reports Content -->
+  <div *ngIf="reportsData && !loading" class="reports-content">
+
+    <!-- Empty State -->
+    <div *ngIf="reportsData.totalPredictions === 0" class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>No Reports Yet</h3>
+      <p>You do not have saved predictions yet. Make your first prediction from the Home page.</p>
+
+      <button class="retry-btn" routerLink="/home">
+        Make First Prediction
+      </button>
+    </div>
+
+    <!-- Data State -->
+    <div *ngIf="reportsData.totalPredictions > 0">
+
+      <!-- Summary Cards -->
+      <div class="stats-grid">
+
+        <div class="stat-card">
+          <div class="stat-icon">🔮</div>
+          <div class="stat-info">
+            <h3>{{ reportsData.totalPredictions }}</h3>
+            <p>Total Predictions</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">🌱</div>
+          <div class="stat-info">
+            <h3>{{ reportsData.totalCrops }}</h3>
+            <p>Different Crops</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-info">
+            <h3>{{ reportsData.highQualityCount }}</h3>
+            <p>High Quality Results</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">📈</div>
+          <div class="stat-info">
+            <h3>{{ reportsData.increaseTrendCount }}</h3>
+            <p>Increase Price Trends</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Report Overview -->
+      <div class="section-card">
+        <h3>Report Overview</h3>
+
+        <div class="overview-grid">
+          <div class="overview-item">
+            <span class="overview-label">Most Predicted Crop</span>
+            <span class="overview-value">{{ reportsData.mostPredictedCrop }}</span>
+          </div>
+
+          <div class="overview-item">
+            <span class="overview-label">Decrease Price Trends</span>
+            <span class="overview-value">{{ reportsData.decreaseTrendCount }}</span>
+          </div>
+
+          <div class="overview-item">
+            <span class="overview-label">Latest Prediction Date</span>
+            <span class="overview-value">
+              {{ reportsData.latestPredictionDate | date:'medium' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Crop Summary -->
+      <div class="section-card">
+        <h3>Crop Summary</h3>
+
+        <div class="reports-table-wrapper">
+          <table class="reports-table">
+            <thead>
+              <tr>
+                <th>Crop</th>
+                <th>Total Predictions</th>
+                <th>Latest Year</th>
+                <th>Latest Quality</th>
+                <th>Latest Price Trend</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let crop of reportsData.cropSummaries">
+                <td>
+                  <span class="crop-cell">
+                    {{ getCropIcon(crop.crop) }} {{ crop.crop }}
+                  </span>
+                </td>
+
+                <td>{{ crop.totalPredictions }}</td>
+                <td>{{ crop.latestYear }}</td>
+
+                <td>
+                  <span [class]="getQualityClass(crop.latestQuality)">
+                    {{ crop.latestQuality }}
+                  </span>
+                </td>
+
+                <td>
+                  <span [class]="getTrendClass(crop.latestPriceTrend)">
+                    {{ crop.latestPriceTrend }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Prediction History -->
+      <div class="section-card">
+        <h3>Prediction History</h3>
+
+        <div class="filter-controls" style="margin-bottom:16px; align-items:center; display:flex; gap:12px;">
+          <input placeholder="Search crop, season, trend..." [(ngModel)]="filterText" (input)="applyFilters()" style="padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.03); color:white; min-width:220px;">
+
+            <select [(ngModel)]="selectedCrop" (change)="applyFilters()" style="padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.03); color:white;">
+            <option value="All">All Crops</option>
+            <option *ngFor="let c of reportsData.cropSummaries" [value]="c.crop">{{ c.crop }}</option>
+          </select>
+
+          <label style="color:rgba(255,255,255,0.9); font-weight:600; margin-left:8px;">Per page</label>
+          <select [(ngModel)]="pageSize" (change)="applyFilters()" style="padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.03); color:white; width:90px;">
+            <option [value]="5">5</option>
+            <option [value]="10">10</option>
+            <option [value]="20">20</option>
+            <option [value]="50">50</option>
+          </select>
+
+          <label style="color:rgba(255,255,255,0.9); font-weight:600; margin-left:12px; display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" [(ngModel)]="groupByYear" (change)="toggleGroupByYear()"> Group by Year
+          </label>
+
+          <button class="retry-btn" (click)="(filterText=''); selectedCrop='All'; applyFilters()" style="margin-left:auto;">Clear</button>
+
+        </div>
+
+        <div class="reports-table-wrapper">
+          <table class="reports-table" *ngIf="!groupByYear">
+            <thead>
+              <tr>
+                <th>Crop</th>
+                <th>Year</th>
+                <th>Season</th>
+                <th>Production</th>
+                <th>Quality</th>
+                <th>Price Trend</th>
+                <th>Created At</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let prediction of pagedPredictions">
+                <td data-label="Crop">
+                  <span class="crop-cell">
+                    {{ getCropIcon(prediction.crop) }} {{ prediction.crop }}
+                  </span>
+                </td>
+
+                <td data-label="Year">{{ prediction.targetYear }}</td>
+                <td data-label="Season">{{ prediction.season }}</td>
+                <td data-label="Production">{{ getProductionText(prediction) }}</td>
+
+                <td data-label="Quality">
+                  <span [class]="getQualityClass(prediction.quality)">
+                    {{ prediction.quality }}
+                  </span>
+                </td>
+
+                <td data-label="Price Trend">
+                  <span [class]="getTrendClass(prediction.priceTrend)">
+                    {{ prediction.priceTrend }}
+                  </span>
+                </td>
+
+                <td data-label="Created At">
+                  {{ prediction.createdAt | date:'medium' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Grouped view -->
+          <div *ngIf="groupByYear">
+            <div *ngFor="let grp of groupedArray">
+              <h4 style="color:white; margin:12px 0;">Year {{ grp.key }}</h4>
+              <div class="reports-table-wrapper" style="margin-bottom:18px;">
+                <table class="reports-table">
+                  <thead>
+                    <tr>
+                      <th>Crop</th>
+                      <th>Season</th>
+                      <th>Production</th>
+                      <th>Quality</th>
+                      <th>Price Trend</th>
+                      <th>Created At</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let prediction of grp.value">
+                      <td data-label="Crop"><span class="crop-cell">{{ getCropIcon(prediction.crop) }} {{ prediction.crop }}</span></td>
+                      <td data-label="Season">{{ prediction.season }}</td>
+                      <td data-label="Production">{{ getProductionText(prediction) }}</td>
+                      <td data-label="Quality"><span [class]="getQualityClass(prediction.quality)">{{ prediction.quality }}</span></td>
+                      <td data-label="Price Trend"><span [class]="getTrendClass(prediction.priceTrend)">{{ prediction.priceTrend }}</span></td>
+                      <td data-label="Created At">{{ prediction.createdAt | date:'medium' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination Controls -->
+          <div *ngIf="!groupByYear && totalPages > 1" style="display:flex; gap:8px; align-items:center; justify-content:center; margin-top:14px;">
+            <button class="retry-btn" (click)="changePage(currentPage - 1)" [disabled]="currentPage===1">Prev</button>
+            <span style="color:rgba(255,255,255,0.9);">Page {{ currentPage }} / {{ totalPages }}</span>
+            <button class="retry-btn" (click)="changePage(currentPage + 1)" [disabled]="currentPage===totalPages">Next</button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <button class="back-btn" (click)="goHome()">
+    ⬅️ Back to Home
+  </button>
+
+</div>

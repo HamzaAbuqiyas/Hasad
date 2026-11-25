@@ -1,0 +1,264 @@
+<div class="homepage-container">
+
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Welcome to <span class="highlight">Hassad</span></h1>
+      <p class="hero-subtitle">Smart Crop Prediction System for Jordan</p>
+
+      <div class="hero-stats">
+        <div class="stat-item" *ngFor="let s of stats">
+          <div class="stat-number">{{ s.number }}</div>
+          <div class="stat-label">{{ s.label }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="floating-elements">
+    
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Header -->
+  <div class="header-section">
+    <div class="logo-section">
+      <h1 class="logo">🌾 Hassad</h1>
+      <p class="tagline">Jordan Agricultural Innovation</p>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn secondary" routerLink="/dashboard" routerLinkActive="active">
+        Dashboard
+      </button>
+
+    <button class="nav-btn secondary" routerLink="/compare-crops" routerLinkActive="active">
+  Compare
+</button>
+      <button class="nav-btn secondary" routerLink="/profile" routerLinkActive="active">
+        Profile
+      </button>
+
+      <button class="nav-btn secondary" routerLink="/reports" routerLinkActive="active">
+        Reports
+      </button>
+
+      <button class="nav-btn secondary" routerLink="/weather" routerLinkActive="active">
+        Weather
+      </button>
+
+      <button class="nav-btn logout" (click)="logout()">
+        Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- About Section -->
+  <div class="about-section">
+    <div class="about-card">
+      <div class="about-content">
+        <h2>About Hassad</h2>
+
+        <p>
+          Hassad is a smart agricultural platform that uses AI to predict crop production,
+          quality, and price trend based on crop type, target year, and season.
+          The system helps farmers and decision-makers understand future crop expectations
+          using historical agricultural and climate data.
+        </p>
+
+        <div class="features-grid">
+
+          <div class="feature-item">
+            <div class="feature-icon">🤖</div>
+            <h4>AI Predictions</h4>
+            <p>Connected to an external AI model API for crop prediction.</p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">💾</div>
+            <h4>Saved Results</h4>
+            <p>Prediction results are stored in the database for later use.</p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">☀️</div>
+            <h4>Amman Weather</h4>
+            <p>Displays real live weather data for Amman, Jordan.</p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">📊</div>
+            <h4>Reports</h4>
+            <p>Saved results appear in dashboard and reports.</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <h3>Quick Actions</h3>
+
+      <div class="actions-grid">
+
+        <button class="action-btn" (click)="scrollToPrediction()">
+          <div class="action-icon">🌱</div>
+          <span>Predict Crop</span>
+        </button>
+
+        <button class="action-btn" routerLink="/dashboard">
+          <div class="action-icon">📊</div>
+          <span>Dashboard</span>
+        </button>
+<button class="action-btn" routerLink="/compare-crops">
+  <div class="action-icon">⚖️</div>
+  <span>Compare Crops</span>
+</button>
+        <button class="action-btn" routerLink="/reports">
+          <div class="action-icon">📈</div>
+          <span>Reports</span>
+        </button>
+
+        <button class="action-btn" routerLink="/weather">
+          <div class="action-icon">☀️</div>
+          <span>Weather</span>
+        </button>
+
+        <button class="action-btn" routerLink="/profile">
+          <div class="action-icon">👤</div>
+          <span>Profile</span>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Prediction Section -->
+    <div class="prediction-section" id="prediction-section">
+      <div class="prediction-card">
+
+        <div class="card-header">
+          <h3>🌾 Crop Prediction</h3>
+          <p>
+            Select crop, target year, and season to generate prediction using the AI model.
+          </p>
+        </div>
+
+        <form class="prediction-form" (ngSubmit)="predict()">
+
+          <div class="form-row">
+
+            <div class="form-group">
+              <label for="crop">Select Crop:</label>
+
+              <select id="crop" [(ngModel)]="selectedCrop" name="selectedCrop" required>
+                <option value="">Choose a crop...</option>
+
+                <option *ngFor="let c of crops" [value]="c.value">
+                  {{ c.label }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="year">Target Year:</label>
+
+              <select id="year" [(ngModel)]="selectedYear" name="selectedYear" required>
+                <option [ngValue]="null">Choose a year...</option>
+
+                <option *ngFor="let y of years" [ngValue]="y">
+                  {{ y }}
+                </option>
+              </select>
+            </div>
+
+          </div>
+
+          <div class="form-row single-row">
+
+            <div class="form-group">
+              <label for="season">Season:</label>
+
+              <select id="season" [(ngModel)]="selectedSeason" name="selectedSeason" required>
+                <option value="">Choose a season...</option>
+                <option value="Spring">Spring</option>
+                <option value="Summer">Summer</option>
+                <option value="Autumn">Autumn</option>
+                <option value="Winter">Winter</option>
+              </select>
+            </div>
+
+          </div>
+
+<button type="button" class="predict-btn" [disabled]="loadingPrediction" (click)="predict()">
+            <span *ngIf="!loadingPrediction">Generate Prediction</span>
+            <span *ngIf="loadingPrediction">Loading prediction from AI model...</span>
+          </button>
+
+        </form>
+
+        <!-- Loading -->
+        <div class="loading-section" *ngIf="loadingPrediction">
+          <div class="loading-spinner"></div>
+          <p>Loading prediction from AI model...</p>
+        </div>
+
+        <!-- Error -->
+        <div class="error-section" *ngIf="predictionError && !loadingPrediction">
+          <h3>Prediction Error</h3>
+          <p>{{ predictionError }}</p>
+        </div>
+
+        <!-- Result -->
+        <div class="result-section" *ngIf="result && !loadingPrediction">
+          <div class="result-card">
+            <div class="result-header">
+              <h4>🌾 Prediction Result</h4>
+              <div class="result-icon">📊</div>
+            </div>
+
+            <p class="result-text">{{ result }}</p>
+
+            <div class="result-actions">
+              <button type="button" class="result-btn secondary" routerLink="/reports">
+                View Reports
+              </button>
+
+              <button type="button" class="result-btn secondary" (click)="viewPredictionCharts()">
+                View Charts
+              </button>
+
+              <button type="button" class="result-btn primary" routerLink="/dashboard">
+                View Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Decorative Elements -->
+  <div class="decorative-elements">
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
+    <div class="floating-shape shape-4"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer-section">
+    <div class="footer-content">
+      <p>© 2026 Hassad. All rights reserved.</p>
+      <p>Smart Crop Prediction System</p>
+    </div>
+  </footer>
+
+</div>

@@ -1,0 +1,200 @@
+<div class="dashboard-container">
+
+  <div class="header-section">
+    <div class="logo-section">
+      <h1 class="logo">🌾 Hassad</h1>
+      <p class="tagline">حصاد - Smart Crop Prediction System</p>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn secondary" routerLink="/home">🏠 Home</button>
+      <button class="nav-btn secondary" routerLink="/dashboard">📊 Dashboard</button>
+      <button class="nav-btn secondary" routerLink="/profile">👤 Profile</button>
+      <button class="nav-btn secondary" routerLink="/reports">📈 Reports</button>
+      <button class="nav-btn logout" (click)="logout()">🚪 Logout</button>
+    </div>
+  </div>
+
+  <div class="dashboard-hero">
+    <div class="dashboard-header">
+      <div class="dashboard-avatar">
+        <div class="avatar-circle">
+          <span class="avatar-icon">📊</span>
+        </div>
+      </div>
+
+      <div class="dashboard-info">
+        <h1>Farm Dashboard</h1>
+
+        <p *ngIf="dashboardData">
+          Welcome back, {{ dashboardData.userName }}!
+        </p>
+
+        <p *ngIf="!dashboardData">
+          Welcome to your dashboard.
+        </p>
+
+        <div class="dashboard-status">
+          <span class="status-badge active">
+            {{ dashboardData?.accountStatus || 'Active' }}
+          </span>
+
+          <span class="last-update">
+            Real data from database
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-section">
+    <div class="loading-spinner"></div>
+    <p>Loading dashboard from database...</p>
+  </div>
+
+  <div *ngIf="error && !loading" class="error-section">
+    <div class="error-icon">⚠️</div>
+    <h3>Unable to Load Dashboard</h3>
+    <p>{{ error }}</p>
+
+    <button class="retry-btn" (click)="loadDashboardData()">
+      Try Again
+    </button>
+  </div>
+
+  <div *ngIf="dashboardData && !loading" class="dashboard-content">
+
+    <div class="stats-grid">
+
+      <div class="stat-card">
+        <div class="stat-icon">🔮</div>
+        <div class="stat-info">
+          <h3>{{ dashboardData.totalPredictions }}</h3>
+          <p>Total Predictions</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🌾</div>
+        <div class="stat-info">
+          <h3>{{ dashboardData.activeCrops.length }}</h3>
+          <p>Profile Crops</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-info">
+          <h3>{{ dashboardData.mostUsedCrop }}</h3>
+          <p>Most Predicted Crop</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🕒</div>
+        <div class="stat-info">
+          <h3>{{ getLatestPredictionText() }}</h3>
+          <p>Latest Prediction</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="section-card">
+      <h3>Profile Crops</h3>
+
+      <div *ngIf="dashboardData.activeCrops.length > 0" class="predictions-list">
+        <div class="prediction-item" *ngFor="let crop of dashboardData.activeCrops">
+          <div class="prediction-icon">
+            {{ getCropIcon(crop) }}
+          </div>
+
+          <div class="prediction-details">
+            <p class="crop-name">{{ crop }}</p>
+            <p class="prediction-text">Saved in your profile</p>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="dashboardData.activeCrops.length === 0" class="empty-state">
+        <p>No crops saved in your profile yet.</p>
+        <button class="retry-btn" routerLink="/profile">Complete Profile</button>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3>Recent Predictions</h3>
+
+      <div *ngIf="dashboardData.recentPredictions.length > 0" class="predictions-list">
+
+        <div class="prediction-item" *ngFor="let pred of dashboardData.recentPredictions">
+          <div class="prediction-icon">
+            {{ getCropIcon(pred.crop) }}
+          </div>
+
+          <div class="prediction-details">
+            <p class="crop-name">
+              {{ pred.crop }} - {{ pred.targetYear }}
+            </p>
+
+            <p class="prediction-text">
+              Season: <strong>{{ pred.season }}</strong>
+            </p>
+
+            <p class="prediction-text">
+              Production: <strong>{{ getProductionText(pred) }}</strong>
+            </p>
+
+            <p class="prediction-text">
+              Quality: <strong>{{ pred.quality }}</strong>
+              |
+              Price Trend: <strong>{{ pred.priceTrend }}</strong>
+            </p>
+
+            <p class="prediction-date">
+              {{ pred.createdAt | date:'medium' }}
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <div *ngIf="dashboardData.recentPredictions.length === 0" class="empty-state">
+        <p>No predictions saved yet.</p>
+        <button class="retry-btn" routerLink="/home">Make First Prediction</button>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3>System Notes</h3>
+
+      <ul class="alerts-list">
+        <li class="alert-item" *ngIf="dashboardData.profileCompleted">
+          <span class="alert-icon">✅</span>
+          Your profile is completed and saved in the database.
+        </li>
+
+        <li class="alert-item" *ngIf="!dashboardData.profileCompleted">
+          <span class="alert-icon">⚠️</span>
+          Your profile is not completed yet.
+        </li>
+
+        <li class="alert-item" *ngIf="dashboardData.totalPredictions > 0">
+          <span class="alert-icon">💾</span>
+          Your prediction results are saved in the database.
+        </li>
+
+        <li class="alert-item" *ngIf="dashboardData.totalPredictions === 0">
+          <span class="alert-icon">ℹ️</span>
+          Make a prediction from the home page to fill this dashboard.
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <button class="back-btn" (click)="goHome()">
+    ⬅️ Back to Home
+  </button>
+
+</div>

@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!-- Api = the entry point. Controllers only translate HTTP <-> Application services. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Secrets live outside the project folder: right-click the project > Manage User Secrets -->
+    <UserSecretsId>hassad-api-7d3f2c1e-5b8a-4e6f-9a21-0c4d8e9f1a23</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Hassad.Application\Hassad.Application.csproj" />
+    <ProjectReference Include="..\Hassad.Infrastructure\Hassad.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

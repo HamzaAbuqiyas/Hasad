@@ -1,0 +1,196 @@
+<div class="weather-container">
+
+  <!-- Header -->
+  <div class="header-section">
+    <div class="logo-section">
+      <h1 class="logo">🌾 Hassad</h1>
+      <p class="tagline">حصاد - Smart Crop Prediction System</p>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn secondary" routerLink="/home">
+        🏠 Home
+      </button>
+
+      <button class="nav-btn secondary" routerLink="/dashboard">
+        📊 Dashboard
+      </button>
+
+      <button class="nav-btn secondary" routerLink="/profile">
+        👤 Profile
+      </button>
+
+      <button class="nav-btn secondary" routerLink="/reports">
+        📈 Reports
+      </button>
+
+      <button class="nav-btn secondary" routerLink="/weather">
+        🌦️ Weather
+      </button>
+
+      <button class="nav-btn logout" (click)="logout()">
+        🚪 Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="weather-hero">
+    <div class="weather-header">
+      <div class="weather-avatar">
+        <div class="avatar-circle">
+          <span class="avatar-icon">🌦️</span>
+        </div>
+      </div>
+
+      <div class="weather-info">
+        <h1>Amman Weather</h1>
+        <p>Real live weather data for Amman, Jordan.</p>
+
+        <div class="weather-status">
+          <span class="status-badge active">Live Weather</span>
+          <span class="last-update">Amman - Jordan</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-section">
+    <div class="loading-spinner"></div>
+    <p>Loading real weather data for Amman...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-section">
+    <div class="error-icon">⚠️</div>
+    <h3>Unable to Load Weather</h3>
+    <p>{{ error }}</p>
+
+    <button class="retry-btn" (click)="refreshWeather()">
+      Try Again
+    </button>
+  </div>
+
+  <!-- Weather Content -->
+  <div *ngIf="weatherData && !loading" class="weather-content">
+
+    <!-- Current Weather -->
+    <div class="section-card current-weather-card">
+      <h3>Current Weather - {{ weatherData.city }}, {{ weatherData.country }}</h3>
+
+      <div class="current-weather-main">
+        <div class="current-weather-icon">
+          {{ getWeatherIcon(weatherData.current.condition) }}
+        </div>
+
+        <div class="current-weather-details">
+          <h2>
+            {{ formatNumber(weatherData.current.temperature) }}°C
+          </h2>
+
+          <p class="condition-text">
+            {{ weatherData.current.condition }}
+          </p>
+
+          <p class="weather-time">
+            Time: {{ weatherData.current.time }}
+          </p>
+        </div>
+      </div>
+
+      <div class="weather-stats-grid">
+
+        <div class="weather-stat-card">
+          <div class="stat-icon">💧</div>
+          <div class="stat-info">
+            <h3>{{ weatherData.current.humidity ?? 'N/A' }}%</h3>
+            <p>Humidity</p>
+          </div>
+        </div>
+
+        <div class="weather-stat-card">
+          <div class="stat-icon">🌧️</div>
+          <div class="stat-info">
+            <h3>{{ formatNumber(weatherData.current.precipitation) }} mm</h3>
+            <p>Precipitation</p>
+          </div>
+        </div>
+
+        <div class="weather-stat-card">
+          <div class="stat-icon">🌬️</div>
+          <div class="stat-info">
+            <h3>{{ formatNumber(weatherData.current.windSpeed) }} km/h</h3>
+            <p>Wind Speed</p>
+          </div>
+        </div>
+
+      </div>
+
+      <button class="retry-btn" (click)="refreshWeather()">
+        🔄 Refresh Weather
+      </button>
+    </div>
+
+    <!-- 5 Days Forecast -->
+    <div class="section-card">
+      <h3>5-Day Forecast for Amman</h3>
+
+      <div class="forecast-list">
+
+        <div class="forecast-item" *ngFor="let day of weatherData.dailyForecast">
+          <div class="forecast-icon">
+            {{ getWeatherIcon(day.condition) }}
+          </div>
+
+          <div class="forecast-details">
+            <p class="forecast-date">
+              {{ day.date }}
+            </p>
+
+            <p class="forecast-condition">
+              {{ day.condition }}
+            </p>
+          </div>
+
+          <div class="forecast-temp">
+            {{ getForecastTempText(day) }}
+          </div>
+
+          <div class="forecast-rain">
+            Rain: {{ formatNumber(day.precipitation) }} mm
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Agriculture Notes -->
+    <div class="section-card">
+      <h3>Agriculture Weather Notes</h3>
+
+      <ul class="alerts-list">
+        <li class="alert-item">
+          <span class="alert-icon">🌡️</span>
+          Temperature helps farmers plan irrigation and outdoor field work.
+        </li>
+
+        <li class="alert-item">
+          <span class="alert-icon">🌧️</span>
+          Rain forecast helps farmers plan watering and harvesting decisions.
+        </li>
+
+        <li class="alert-item">
+          <span class="alert-icon">🌬️</span>
+          Wind speed can affect spraying and other agricultural activities.
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <button class="back-btn" (click)="goHome()">
+    ⬅️ Back to Home
+  </button>
+
+</div>

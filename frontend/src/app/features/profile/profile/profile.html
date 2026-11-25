@@ -1,0 +1,253 @@
+<div class="profile-container">
+
+  <!-- Navigation Header -->
+  <div class="header-section">
+    <div class="logo-section">
+      <h1 class="logo">🌾 Hassad</h1>
+      <p class="tagline">حصاد - Jordan's Agricultural Innovation</p>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn secondary" routerLink="/dashboard" routerLinkActive="active">
+        📊 Dashboard
+      </button>
+
+      <button class="nav-btn logout" type="button" (click)="logout()">
+        🚪 Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- FORM BEFORE SAVE -->
+  <div class="profile-form-wrapper" *ngIf="viewMode === 'form'">
+    <div class="section-card form-card">
+
+      <div class="section-header">
+        <h2>👤 Complete Your Profile</h2>
+        <p>Please fill your farm information before viewing your profile.</p>
+      </div>
+
+      <div *ngIf="error" class="error-message">
+        {{ error }}
+      </div>
+
+      <form (ngSubmit)="saveProfile()">
+
+        <div class="form-group">
+          <label>📞 Phone Number</label>
+          <input
+            type="text"
+            name="phone"
+            [(ngModel)]="phone"
+            placeholder="Example: +962 77 123 4567"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>📍 Location</label>
+          <input
+            type="text"
+            name="location"
+            [(ngModel)]="location"
+            placeholder="Example: Irbid, Jordan"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>🌾 Farm Size / Hectares</label>
+          <input
+            type="number"
+            name="farmSize"
+            [(ngModel)]="farmSize"
+            placeholder="Example: 25"
+            min="1"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>🌱 Select Your Crops</label>
+
+          <div class="crops-grid">
+            <button
+              type="button"
+              class="crop-chip"
+              *ngFor="let crop of cropOptions"
+              [class.selected]="isCropSelected(crop)"
+              (click)="toggleCrop(crop)"
+            >
+              {{ getCropIcon(crop) }} {{ crop }}
+            </button>
+          </div>
+        </div>
+
+        <button class="save-btn" type="submit" [disabled]="saving">
+          {{ saving ? 'Saving...' : 'Save Profile' }}
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- PROFILE HERO AFTER SAVE -->
+  <div class="profile-hero" *ngIf="viewMode === 'view' && userProfile">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <div class="avatar-circle">
+          <span class="avatar-icon">👤</span>
+        </div>
+      </div>
+
+      <div class="profile-info">
+        <h1>{{ userProfile.firstName }} {{ userProfile.lastName }}</h1>
+        <p class="profile-email">{{ userProfile.email }}</p>
+
+        <div class="profile-status">
+          <span class="status-badge active">
+            {{ userProfile.accountStatus || 'Active' }}
+          </span>
+
+          <span class="join-date" *ngIf="userProfile.joinDate">
+            Member since {{ userProfile.joinDate | date:'MMMM yyyy' }}
+          </span>
+        </div>
+      </div>
+
+      <button class="edit-btn" type="button" (click)="editProfile()">
+        ✏️ Edit Profile
+      </button>
+    </div>
+  </div>
+
+  <!-- PROFILE CONTENT AFTER SAVE -->
+  <div *ngIf="viewMode === 'view' && userProfile" class="profile-content">
+
+    <!-- Personal Information -->
+    <div class="profile-section">
+      <div class="section-card">
+        <div class="section-header">
+          <h2>👤 Personal Information</h2>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <label>First Name</label>
+            <span>{{ userProfile.firstName }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Last Name</label>
+            <span>{{ userProfile.lastName }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Email Address</label>
+            <span>{{ userProfile.email }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Phone Number</label>
+            <span>{{ userProfile.phone }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Location</label>
+            <span>{{ userProfile.location }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Farm Size</label>
+            <span>{{ userProfile.farmSize }} hectares</span>
+          </div>
+
+          <div class="info-item">
+            <label>Profile Completed</label>
+            <span>{{ userProfile.isProfileCompleted ? 'Yes' : 'No' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Farm Information -->
+    <div class="profile-section">
+      <div class="section-card">
+        <div class="section-header">
+          <h2>🌾 Farm Information</h2>
+        </div>
+
+        <div class="crops-section" *ngIf="userProfile.crops && userProfile.crops.length > 0">
+          <h3>Your Crops</h3>
+
+          <div class="crops-grid">
+            <div class="crop-item" *ngFor="let crop of userProfile.crops">
+              <span class="crop-icon">{{ getCropIcon(crop) }}</span>
+              <span class="crop-name">{{ crop }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="crops-section" *ngIf="!userProfile.crops || userProfile.crops.length === 0">
+          <h3>Your Crops</h3>
+          <p>No crops added yet.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="profile-section">
+      <div class="section-card">
+        <div class="section-header">
+          <h2>📊 Activity Statistics</h2>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number">{{ userProfile.totalPredictions || 0 }}</div>
+            <div class="stat-label">Total Predictions</div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-number">{{ userProfile.crops.length }}</div>
+            <div class="stat-label">Crop Types</div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-number">{{ userProfile.farmSize ? '1' : '0' }}</div>
+            <div class="stat-label">Active Farms</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="profile-section">
+      <div class="section-card">
+        <div class="section-header">
+          <h2>⚡ Quick Actions</h2>
+        </div>
+
+        <div class="actions-grid">
+          <button class="action-btn" routerLink="/dashboard">
+            <div class="action-icon">📊</div>
+            <span>View Dashboard</span>
+          </button>
+
+          <button class="action-btn" routerLink="/reports">
+            <div class="action-icon">📋</div>
+            <span>View Reports</span>
+          </button>
+
+          <button class="action-btn" routerLink="/weather">
+            <div class="action-icon">🌤️</div>
+            <span>Weather Info</span>
+          </button>
+
+          <button class="action-btn" routerLink="/support">
+            <div class="action-icon">📞</div>
+            <span>Support</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

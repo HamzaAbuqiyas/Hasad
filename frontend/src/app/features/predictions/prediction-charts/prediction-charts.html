@@ -1,0 +1,283 @@
+<div class="charts-container">
+
+  <div class="header-section">
+    <div class="logo-section">
+      <h1 class="logo">📈 Prediction Charts</h1>
+      <p class="tagline">Visual analysis for your latest Hassad prediction</p>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn secondary" routerLink="/home">Home</button>
+      <button class="nav-btn secondary" routerLink="/reports">Reports</button>
+      <button class="nav-btn secondary" routerLink="/dashboard">Dashboard</button>
+    </div>
+  </div>
+
+  <div class="empty-card" *ngIf="!prediction">
+    <h2>No Prediction Found</h2>
+    <p>Please go back to the homepage and generate a prediction first.</p>
+
+    <button class="main-btn" routerLink="/home">
+      Back to Prediction
+    </button>
+  </div>
+
+  <ng-container *ngIf="prediction">
+
+    <div class="summary-grid">
+
+      <div class="summary-card">
+        <div class="summary-icon">🌾</div>
+        <h3>Crop</h3>
+        <p>{{ getCropValue() }}</p>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-icon">📅</div>
+        <h3>Target Year</h3>
+        <p>{{ getTargetYearValue() }}</p>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-icon">🌦️</div>
+        <h3>Season</h3>
+        <p>{{ getSeasonValue() }}</p>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-icon">📦</div>
+        <h3>Production</h3>
+        <p>{{ formatNumber(getProductionValue()) }}</p>
+      </div>
+
+    </div>
+
+    <section class="hasad-ai-card">
+      <div class="ai-header">
+        <div>
+          <h2>🤖 Hasad AI Insight</h2>
+          <p>
+            Hasad AI explains the prediction results and charts in simple language.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="nav-btn secondary"
+          (click)="loadHasadAiInsight()"
+          [disabled]="aiLoading">
+          {{ aiLoading ? 'Generating...' : 'Regenerate Insight' }}
+        </button>
+      </div>
+
+      <div *ngIf="aiLoading" class="ai-loading">
+        Generating Hasad AI explanation...
+      </div>
+
+      <div *ngIf="aiError" class="ai-error">
+        {{ aiError }}
+      </div>
+
+      <div *ngIf="aiInsight && !aiLoading" class="ai-content">
+        <h3>{{ aiInsight.title }}</h3>
+
+        <div class="ai-section">
+          <strong>Summary</strong>
+          <p>{{ aiInsight.summary }}</p>
+        </div>
+
+        <div class="ai-section">
+          <strong>Result Explanation</strong>
+          <p>{{ aiInsight.resultExplanation }}</p>
+        </div>
+
+        <div class="ai-section">
+          <strong>Chart Explanation</strong>
+          <p>{{ aiInsight.chartExplanation }}</p>
+        </div>
+
+        <div class="ai-section">
+          <strong>Recommendation</strong>
+          <p>{{ aiInsight.recommendation }}</p>
+        </div>
+
+        <div class="ai-section warning">
+          <strong>Risk Note</strong>
+          <p>{{ aiInsight.riskNote }}</p>
+        </div>
+
+        <small>{{ aiInsight.confidenceNote }}</small>
+      </div>
+    </section>
+
+    <section class="hasad-ai-card ask-card">
+      <h2>💬 Ask Hasad AI</h2>
+      <p>
+        Ask about this crop prediction, the charts, quality, production, or price trend.
+      </p>
+
+      <div class="ask-box">
+        <input
+          type="text"
+          [(ngModel)]="askQuestion"
+          placeholder="Example: Is this crop suitable for this season?"
+          (keyup.enter)="askHasadAi()"
+        />
+
+        <button
+          type="button"
+          (click)="askHasadAi()"
+          [disabled]="askLoading || !askQuestion.trim()">
+          {{ askLoading ? 'Asking...' : 'Ask' }}
+        </button>
+      </div>
+
+      <div class="ai-answer" *ngIf="askAnswer">
+        <strong>Hasad AI Answer</strong>
+        <p>{{ askAnswer }}</p>
+      </div>
+    </section>
+
+    <div class="charts-grid">
+
+      <div class="chart-card large-card">
+        <div class="chart-header">
+          <h2>📊 Crop Production Trends</h2>
+          <p>
+            Stacked agricultural factors with production trend line for the selected year and five previous years.
+          </p>
+        </div>
+
+        <div class="combo-chart-box">
+          <svg class="combo-chart" viewBox="0 0 880 390">
+
+            <text x="440" y="28" text-anchor="middle" class="combo-title">
+              Crop Prediction Trends, {{ getTargetYearValue() - 5 }}–{{ getTargetYearValue() }}
+            </text>
+
+            <line x1="70" y1="310" x2="820" y2="310" class="combo-axis"></line>
+            <line x1="70" y1="35" x2="70" y2="310" class="combo-axis"></line>
+
+            <line x1="70" y1="260" x2="820" y2="260" class="combo-grid"></line>
+            <line x1="70" y1="210" x2="820" y2="210" class="combo-grid"></line>
+            <line x1="70" y1="160" x2="820" y2="160" class="combo-grid"></line>
+            <line x1="70" y1="110" x2="820" y2="110" class="combo-grid"></line>
+            <line x1="70" y1="60" x2="820" y2="60" class="combo-grid"></line>
+
+            <text x="45" y="313" text-anchor="end" class="combo-y-label">0</text>
+            <text x="45" y="263" text-anchor="end" class="combo-y-label">Low</text>
+            <text x="45" y="213" text-anchor="end" class="combo-y-label">Med</text>
+            <text x="45" y="163" text-anchor="end" class="combo-y-label">High</text>
+            <text x="45" y="113" text-anchor="end" class="combo-y-label">Very</text>
+            <text x="45" y="63" text-anchor="end" class="combo-y-label">Peak</text>
+
+            <g *ngFor="let point of comboChartPoints">
+              <g *ngFor="let segment of point.segments">
+                <rect
+                  [attr.x]="point.x - 28"
+                  [attr.y]="segment.y"
+                  width="56"
+                  [attr.height]="segment.height"
+                  [attr.fill]="segment.color"
+                  class="combo-bar">
+                </rect>
+              </g>
+
+              <text
+                [attr.x]="point.x"
+                y="340"
+                text-anchor="middle"
+                class="combo-year">
+                {{ point.year }}
+              </text>
+            </g>
+
+            <polyline
+              [attr.points]="comboLinePoints"
+              class="combo-trend-line">
+            </polyline>
+
+            <g *ngFor="let point of comboChartPoints">
+              <circle
+                [attr.cx]="point.x"
+                [attr.cy]="point.lineY"
+                r="5"
+                class="combo-line-dot">
+              </circle>
+            </g>
+          </svg>
+
+          <div class="combo-legend">
+            <span><i style="background:#8ecae6"></i> Area</span>
+            <span><i style="background:#ffd166"></i> Rainfall</span>
+            <span><i style="background:#f4a261"></i> Temperature</span>
+            <span><i style="background:#90be6d"></i> Yield</span>
+            <span><i style="background:#cdb4db"></i> Market</span>
+            <span><i style="background:#adb5bd"></i> Growth</span>
+            <span><i class="line-legend"></i> Production</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <h2>⭐ Quality Result</h2>
+          <p>Predicted quality category from the AI model.</p>
+        </div>
+
+        <div
+          class="quality-box"
+          [class.low]="getQualityValue() === 'Low'"
+          [class.medium]="getQualityValue() === 'Medium'"
+          [class.high]="getQualityValue() === 'High'">
+
+          <div class="quality-circle">
+            {{ getQualityIcon(getQualityValue()) }}
+          </div>
+
+          <h3>{{ getQualityValue() || 'N/A' }}</h3>
+          <p>{{ getQualityMessage(getQualityValue()) }}</p>
+
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <h2>💰 Price Trend</h2>
+          <p>Expected direction of crop price.</p>
+        </div>
+
+        <div
+          class="trend-box"
+          [class.increase]="getPriceTrendValue() === 'Increase'"
+          [class.decrease]="getPriceTrendValue() === 'Decrease'">
+
+          <div class="trend-icon">
+            {{ getPriceTrendValue() === 'Increase' ? '📈' : '📉' }}
+          </div>
+
+          <h3>{{ getPriceTrendValue() || 'N/A' }}</h3>
+
+          <div class="trend-meter">
+            <div
+              class="trend-fill"
+              [style.width.%]="getPriceTrendValue() === 'Increase' ? 75 : 45">
+            </div>
+          </div>
+
+          <p>
+            {{
+              getPriceTrendValue() === 'Increase'
+                ? 'The model expects the price to increase.'
+                : 'The model expects the price to decrease.'
+            }}
+          </p>
+
+        </div>
+      </div>
+
+    </div>
+
+  </ng-container>
+
+</div>

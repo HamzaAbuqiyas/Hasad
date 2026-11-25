@@ -1,0 +1,136 @@
+<div class="support-container">
+  <!-- Navigation Header -->
+  <div class="header-section">
+    <div class="logo-section">
+      <h1 class="logo">🌾 Hassad</h1>
+      <p class="tagline">حصاد - Jordan's Agricultural Innovation</p>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn secondary" routerLink="/dashboard" routerLinkActive="active">📊 Dashboard</button>
+      <button class="nav-btn secondary" routerLink="/profile" routerLinkActive="active">👤 Profile</button>
+      <button class="nav-btn secondary" routerLink="/support" routerLinkActive="active">📞 Support</button>
+      <button class="nav-btn logout" (click)="logout()">🚪 Logout</button>
+    </div>
+  </div>
+
+  <!-- Support Hero Section -->
+  <div class="support-hero">
+    <div class="support-header">
+      <div class="support-avatar">
+        <div class="avatar-circle">
+          <span class="avatar-icon">📞</span>
+        </div>
+      </div>
+      <div class="support-info">
+        <h1>Support Center</h1>
+        <p>Get help and find answers to your questions</p>
+        <div class="support-status">
+          <span class="status-badge active">24/7 Available</span>
+          <span class="response-time">Avg. response: 2 hours</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-section">
+    <div class="loading-spinner"></div>
+    <p>Loading support information...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-section">
+    <div class="error-icon">⚠️</div>
+    <h3>Unable to Load Support Data</h3>
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadSupportData()">Try Again</button>
+  </div>
+
+  <!-- Support Content -->
+  <div *ngIf="supportData && !loading" class="support-content">
+    <!-- Contact Information -->
+    <div class="section-card">
+      <h3>Contact Information</h3>
+      <div class="contact-grid">
+        <div class="contact-item">
+          <div class="contact-icon">📧</div>
+          <div class="contact-details">
+            <h4>Email Support</h4>
+            <p>{{ supportData.contactInfo.email }}</p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📱</div>
+          <div class="contact-details">
+            <h4>Phone Support</h4>
+            <p>{{ supportData.contactInfo.phone }}</p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">🕒</div>
+          <div class="contact-details">
+            <h4>Working Hours</h4>
+            <p>{{ supportData.contactInfo.hours }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="section-card">
+      <h3>Send us a Message</h3>
+      <form *ngIf="!formSubmitted" (ngSubmit)="submitForm()" class="contact-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Name *</label>
+            <input type="text" id="name" [(ngModel)]="contactForm.name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="email" id="email" [(ngModel)]="contactForm.email" name="email" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="subject">Subject</label>
+          <input type="text" id="subject" [(ngModel)]="contactForm.subject" name="subject">
+        </div>
+        <div class="form-group">
+          <label for="message">Message *</label>
+          <textarea id="message" [(ngModel)]="contactForm.message" name="message" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Send Message</button>
+      </form>
+
+      <div *ngIf="formSubmitted" class="form-success">
+        <div class="success-icon">✅</div>
+        <h4>Message Sent!</h4>
+        <p>{{ formMessage }}</p>
+        <button class="new-message-btn" (click)="formSubmitted = false">Send Another Message</button>
+      </div>
+
+      <div *ngIf="formMessage && !formSubmitted" class="form-error">
+        <p>{{ formMessage }}</p>
+      </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="section-card">
+      <h3>Frequently Asked Questions</h3>
+      <div class="faq-list">
+        <div class="faq-item" *ngFor="let faq of supportData.faqs">
+          <div class="faq-question">
+            <span class="faq-icon">❓</span>
+            <h4>{{ faq.question }}</h4>
+          </div>
+          <div class="faq-answer">
+            <p>{{ faq.answer }}</p>
+            <span class="faq-category">{{ faq.category }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="back-btn" (click)="goHome()">⬅️ Back to Home</button>
+</div>
+

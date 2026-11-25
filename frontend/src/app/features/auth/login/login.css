@@ -1,0 +1,227 @@
+/* Agriculture Website Theme - Login Page */
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2d5016 0%, #4a7c2a 50%, #8b7514 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  padding: 50px 40px;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 2;
+  border-left: 5px solid #6b9523;
+}
+
+/* Logo Section */
+.logo-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* Unified login panel styling */
+.login-card {
+  border-radius: 24px;
+  padding: 52px 46px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.18);
+  border-left: 7px solid rgba(107, 149, 35, 0.95);
+}
+
+.login-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 70%);
+}
+
+.login-form {
+  gap: 24px;
+}
+
+.form-group input {
+  border-radius: 16px;
+  border-color: rgba(107, 149, 35, 0.16);
+  background: #f8fbf7;
+}
+
+.login-btn {
+  border-radius: 18px;
+  min-height: 54px;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(107, 149, 35, 0.35);
+}
+
+.form-footer {
+  margin-top: 24px;
+}
+
+/* Form Styles */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d5016;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input {
+  padding: 12px 16px;
+  border: 2px solid #e8f0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background-color: #fafbf9;
+  color: #2d5016;
+}
+
+.form-group input::placeholder {
+  color: #a8b894;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #6b9523;
+  background-color: white;
+  box-shadow: 0 0 0 4px rgba(107, 149, 35, 0.1);
+}
+
+/* Login Button */
+.login-btn {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #6b9523 0%, #4a7c2a 100%);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  box-shadow: 0 4px 15px rgba(107, 149, 35, 0.3);
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(107, 149, 35, 0.4);
+  background: linear-gradient(135deg, #7aa52f 0%, #569035 100%);
+}
+
+.login-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(107, 149, 35, 0.3);
+}
+
+/* Form Footer */
+.form-footer {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.form-footer p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.form-footer a {
+  color: #6b9523;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.form-footer a:hover {
+  color: #2d5016;
+  text-decoration: underline;
+}
+
+/* Decorative Elements */
+.decorative-element {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  opacity: 0.08;
+  right: -100px;
+  bottom: -100px;
+  z-index: 1;
+}
+
+.leaf {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: white;
+  border-radius: 0 100% 0 100%;
+}
+
+.leaf:nth-child(1) {
+  top: 0;
+  left: 0;
+  transform: rotate(45deg);
+}
+
+.leaf:nth-child(2) {
+  top: 50px;
+  right: 0;
+  transform: rotate(-25deg);
+}
+
+.leaf:nth-child(3) {
+  bottom: 0;
+  left: 50px;
+  transform: rotate(75deg);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 30px 20px;
+  }
+
+  .logo {
+    font-size: 36px;
+  }
+
+  .login-form {
+    gap: 20px;
+  }
+
+  .form-group input,
+  .login-btn {
+    font-size: 16px; /* Prevents zoom on mobile */
+  }
+}

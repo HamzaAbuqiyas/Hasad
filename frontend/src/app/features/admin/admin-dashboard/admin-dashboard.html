@@ -1,0 +1,174 @@
+<div class="admin-page">
+  <div class="admin-header">
+    <div>
+      <h1>Hassad Admin Dashboard</h1>
+      <p>Manage users, roles, account status, and predictions.</p>
+    </div>
+
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <h3>Total Users</h3>
+      <p>{{ summary?.totalUsers ?? 0 }}</p>
+    </div>
+
+    <div class="summary-card">
+      <h3>Admins</h3>
+      <p>{{ summary?.totalAdmins ?? 0 }}</p>
+    </div>
+
+    <div class="summary-card">
+      <h3>Active Users</h3>
+      <p>{{ summary?.activeUsers ?? 0 }}</p>
+    </div>
+
+    <div class="summary-card">
+      <h3>Blocked Users</h3>
+      <p>{{ summary?.blockedUsers ?? 0 }}</p>
+    </div>
+
+    <div class="summary-card">
+      <h3>Predictions</h3>
+      <p>{{ summary?.totalPredictions ?? 0 }}</p>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button
+      [class.active]="activeTab === 'users'"
+      (click)="activeTab = 'users'">
+      Users
+    </button>
+
+    <button
+      [class.active]="activeTab === 'predictions'"
+      (click)="activeTab = 'predictions'">
+      Predictions
+    </button>
+  </div>
+
+  <div *ngIf="activeTab === 'users'" class="section-card">
+    <h2>Users Management</h2>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Location</th>
+            <th>Total Predictions</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td>{{ user.id }}</td>
+            <td>{{ user.fullName }}</td>
+            <td>{{ user.email }}</td>
+
+            <td>
+              <span class="badge role">{{ user.role }}</span>
+            </td>
+
+            <td>
+              <span
+                class="badge"
+                [class.active-status]="user.accountStatus === 'Active'"
+                [class.blocked-status]="user.accountStatus === 'Blocked'">
+                {{ user.accountStatus }}
+              </span>
+            </td>
+
+            <td>{{ user.location || '-' }}</td>
+            <td>{{ user.totalPredictions || 0 }}</td>
+
+            <td class="actions">
+              <button
+                *ngIf="user.accountStatus === 'Active'"
+                class="warning"
+                (click)="blockUser(user)">
+                Block
+              </button>
+
+              <button
+                *ngIf="user.accountStatus === 'Blocked'"
+                class="success"
+                (click)="activateUser(user)">
+                Activate
+              </button>
+
+              <button
+                *ngIf="user.role === 'User'"
+                class="primary"
+                (click)="makeAdmin(user)">
+                Make Admin
+              </button>
+
+              <button
+                *ngIf="user.role === 'Admin'"
+                class="secondary"
+                (click)="makeUser(user)">
+                Make User
+              </button>
+
+              <button class="danger" (click)="deleteUser(user)">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="activeTab === 'predictions'" class="section-card">
+    <h2>Predictions Management</h2>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Email</th>
+            <th>Crop</th>
+            <th>Year</th>
+            <th>Season</th>
+            <th>Production</th>
+            <th>Quality</th>
+            <th>Trend</th>
+            <th>Created At</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let prediction of predictions">
+            <td>{{ prediction.id }}</td>
+            <td>{{ prediction.userName }}</td>
+            <td>{{ prediction.userEmail }}</td>
+            <td>{{ prediction.crop }}</td>
+            <td>{{ prediction.targetYear }}</td>
+            <td>{{ prediction.season }}</td>
+            <td>{{ prediction.predictedProduction }}</td>
+            <td>{{ prediction.quality }}</td>
+            <td>{{ prediction.priceTrend }}</td>
+            <td>{{ prediction.createdAt | date:'short' }}</td>
+            <td>
+              <button class="danger" (click)="deletePrediction(prediction)">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
